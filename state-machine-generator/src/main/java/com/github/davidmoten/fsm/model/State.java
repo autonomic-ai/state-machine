@@ -1,8 +1,10 @@
 package com.github.davidmoten.fsm.model;
 
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 
+import com.github.davidmoten.fsm.graph.GraphEdge;
 import com.github.davidmoten.fsm.runtime.Event;
 
 public final class State<T, R extends Event<? super T>> {
@@ -62,6 +64,16 @@ public final class State<T, R extends Event<? super T>> {
 
     public boolean isInitial() {
         return name().equals("Initial");
+    }
+
+    public boolean isTerminal() {
+        // If there are no edges extending from this node, this state is terminal
+        List<GraphEdge> edges = m.getGraphAnalyzer().getConnectedEdges(name);
+        if(edges.size() == 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public void generateClasses(File directory, String pkg) {
