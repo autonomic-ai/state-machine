@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import com.github.davidmoten.bean.annotation.GenerateImmutable;
 import com.github.davidmoten.fsm.graph.Graph;
+import com.github.davidmoten.fsm.graph.GraphAnalyzer;
 import com.github.davidmoten.fsm.graph.GraphEdge;
 import com.github.davidmoten.fsm.graph.GraphNode;
 import com.github.davidmoten.fsm.graph.GraphmlWriter;
@@ -31,6 +32,8 @@ public final class StateMachineDefinition<T> {
     private final List<Transition<T, ? extends Event<? super T>, ? extends Event<? super T>>> transitions = new ArrayList<>();
     private final Set<State<T, ? extends Event<? super T>>> states = new HashSet<>();
     private final State<T, EventVoid> initialState;
+    private Graph graph;
+    private GraphAnalyzer graphAnalyzer;
 
     private StateMachineDefinition(Class<T> cls) {
         Preconditions.checkArgument(!cls.isAnnotationPresent(GenerateImmutable.class),
@@ -58,7 +61,14 @@ public final class StateMachineDefinition<T> {
         states.add(state);
         return state;
     }
-    
+
+    public final State<T, ? extends Event<? super T>> getState(String name) {
+        return states.stream()
+            .filter(s -> s.name().equals(name))
+            .findFirst()
+            .orElse(null);
+    }
+
     public StateBuilder createState(String name) {
          return new StateBuilder(name);
     }
@@ -184,7 +194,26 @@ public final class StateMachineDefinition<T> {
      * Get the Graph representation of this state machine definition
      * @return A Graph generated from this StateMachineDefinition
      */
-    public final Graph getGraph() {
+    public synchronized final Graph getGraph() {
+        if(this.graph == null) {
+            this.graph = this.buildGraph();
+        }
+
+        return this.graph;
+    }
+
+    /**
+     * Get a GraphAnalyzer for this state machine definition
+     * @return
+     */
+    public synchronized final GraphAnalyzer getGraphAnalyzer() {
+        if(this.graphAnalyzer == null) {
+            this.graphAnalyzer = new GraphAnalyzer(getGraph());
+        }
+        return this.graphAnalyzer;
+    }
+
+    private Graph buildGraph() {
         List<GraphNode> nodes = states.stream().map(GraphNode::new).collect(Collectors.toList());
         Map<String, GraphNode> map = nodes.stream()
             .collect(Collectors.toMap(node -> node.state().name(), node -> node));
@@ -195,5 +224,4 @@ public final class StateMachineDefinition<T> {
         }).collect(Collectors.toList());
         return new Graph(nodes, edges);
     }
-
 }

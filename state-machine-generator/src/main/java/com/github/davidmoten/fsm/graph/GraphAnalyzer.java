@@ -38,7 +38,7 @@ public class GraphAnalyzer {
             return edge;
         }
 
-        for(GraphEdge next : getEdges(to)) {
+        for(GraphEdge next : getConnectedEdges(to)) {
             GraphEdge found = visit(next, to, destination);
             if(found != null) {
                 return found;
@@ -53,7 +53,7 @@ public class GraphAnalyzer {
      * @param name The name of the node to where the edges should start
      * @return a possibly-empty list of edges which start from the passed node name
      */
-    List<GraphEdge> getEdges(String name) {
+    public List<GraphEdge> getConnectedEdges(String name) {
         return graph.getEdges()
             .stream()
             .filter(e -> e.getFrom().state().name().equals(name))
@@ -65,7 +65,7 @@ public class GraphAnalyzer {
      * @param name The node name to look up
      * @return the GraphNode if found, null otherwise
      */
-    GraphNode getNode(String name) {
+    public GraphNode getNode(String name) {
         return graph.getNodes()
             .stream()
             .filter(n -> n.state().name().equals(name))
@@ -96,7 +96,7 @@ public class GraphAnalyzer {
             return true;
         }
 
-        List<GraphEdge> edges = getEdges(start);
+        List<GraphEdge> edges = getConnectedEdges(start);
 
         for(GraphEdge next : edges)  {
             result = visit(next, start, destination);
