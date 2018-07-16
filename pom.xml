@@ -4,16 +4,31 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.davidmoten</groupId>
-        <artifactId>sonatype-parent</artifactId>
-        <version>0.1</version>
+        <groupId>com.autonomic</groupId>
+        <artifactId>au-parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
+    <groupId>com.github.davidmoten</groupId>
     <artifactId>state-machine-parent</artifactId>
-    <version>0.2.8-SNAPSHOT</version>
+    <version>0.2.8.au1-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
 
     <url>http://github.com/davidmoten/state-machine</url>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.autonomic</groupId>
+                <artifactId>au-dependencies</artifactId>
+                <version>0.0.2-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -83,17 +98,23 @@
     <modules>
         <module>state-machine-runtime</module>
         <module>state-machine-generator</module>
-        <module>state-machine-maven-plugin</module>
-        <module>state-machine-test-definition</module>
-        <module>state-machine-test</module>
-        <module>state-machine-persistence</module>
-        <module>state-machine-example-shopping-definition</module>
-        <module>state-machine-example-shopping</module>
         <module>state-machine-annotations</module>
+        <module>state-machine-maven-plugin</module>
     </modules>
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                  <groupId>org.apache.rat</groupId>
+                  <artifactId>apache-rat-plugin</artifactId>
+                  <configuration>
+                    <excludes combine.children="append">
+                        <exclude>src/docs/**</exclude>
+                        <!-- this entire repo is apache2 -->
+                        <exclude>**/**</exclude>
+                    </excludes>
+                  </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -109,6 +130,116 @@
             </plugins>
         </pluginManagement>
         <plugins>
+              <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>default-check</id>
+                    <goals>
+                      <goal>check</goal>
+                    </goals>
+                    <configuration>
+                      <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
+                      <rules>
+                        <rule>
+                          <element>BUNDLE</element>
+                          <limits>
+                            <limit>
+                              <counter>INSTRUCTION</counter>
+                              <value>COVEREDRATIO</value>
+                              <!-- avoiding coverage checks for a temporary third-party repo -->
+                              <minimum>0.01</minimum>
+                            </limit>
+                            <limit>
+                              <!-- avoiding coverage checks for a temporary third-party repo -->
+                              <counter>CLASS</counter>
+                              <value>MISSEDRATIO</value>
+                              <maximum>0.01</maximum>
+                            </limit>
+                          </limits>
+                        </rule>
+                      </rules>
+                    </configuration>
+                  </execution>
+                </executions>
+              </plugin>
+            <plugin>
+                <groupId>org.jfrog.buildinfo</groupId>
+                <artifactId>artifactory-maven-plugin</artifactId>
+                <version>${artifactory-maven-plugin.version}</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>build-info</id>
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <publisher>
+                                <contextUrl>https://autonomic.jfrog.io/autonomic</contextUrl>
+                                <repoKey>libs-release-local</repoKey>
+                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+    +                               <password>${artifactory.password}</password>
+                                <username>${artifactory.username}</username>
+                                <password>${artifactory.password}</password>
+                            </publisher>
+                            <deployProperties>
+                                <groupId>${project.groupId}</groupId>
+                                <artifactId>${project.artifactId}</artifactId>
+                                <version>${project.version}</version>
+                            </deployProperties>
+                            <buildInfo>
+                                <buildNumber>${build-number}</buildNumber>
+                            </buildInfo>
+                            <licenses>
+                                <autoDiscover>true</autoDiscover>
+                            </licenses>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- unfortunately there's no way to deploy au-common anymore, so I ensured there are no
+                     conflicting licenses with our legal department and added my own exclusions here. In
+                     the near term I hope to get any changes in this repo merged back to upstream and delete
+                     this repo entirely. -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>au_v1</licenseName>
+                    <licenseResolver>${license.basedir}/licenses</licenseResolver>
+                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                    <outputDirectory>${project.basedir}</outputDirectory>
+                    <descriptionTemplate>${license.basedir}/licenses/description.ftl</descriptionTemplate>
+                    <fileTemplate>${license.basedir}/licenses/third-party-template.ftl</fileTemplate>
+                    <thirdPartyFilename>THIRD-PARTY.csv</thirdPartyFilename>
+                    <useMissingFile>true</useMissingFile>
+                    <missingFile>${license.basedir}/licenses/THIRD-PARTY.properties</missingFile>
+                    <failIfWarning>true</failIfWarning>
+                    <includedLicenses>Autonomic Proprietary 1.0|Ford Proprietary with Autonomic Usage Grant 1.0|Apache License, Version 2.0|MIT-License|BSD 3-Clause|CDDL 1.1|The JSON License|MPL 1.1|Eclipse Public License 1.0|Common Public License Version 1.0|Public Domain|Eclipse Distribution License 1.0|The PostgreSQL License|GNU Lesser General Public License</includedLicenses>
+                    <licenseMerges>
+                        <licenseMerge>Apache License, Version 2.0|Apache 2.0|Apache 2|The Apache Software License, Version 2.0|Apache License, version 2.0|Apache License 2.0|Apache Software Licenses|Apache 2.0 License|ASL, version 2|The Apache License, Version 2.0|Apache-2.0</licenseMerge>
+                        <licenseMerge>MIT-License|MIT License|MIT|The MIT License|MIT license|Bouncy Castle Licence|The MIT License (MIT)</licenseMerge>
+                        <licenseMerge>BSD 3-Clause|BSD 3-clause|New BSD License|New BSD license|BSD New license|The New BSD License|BSD|The BSD License|BSD License|BSD Licence 3</licenseMerge>
+                        <licenseMerge>Eclipse Public License 1.0|Eclipse Public License, Version 1.0|Eclipse Public License - v 1.0|Eclipse Public License (EPL), Version 1.0|EPL 1.0|Eclipse Public License - Version 1.0</licenseMerge>
+                        <licenseMerge>CDDL 1.1|COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0|CDDL+GPL License|CDDL + GPLv2 with classpath exception</licenseMerge>
+                        <licenseMerge>Public Domain|Public Domain, per Creative Commons CC0|CC0 1.0 Universal|CC0|WTFPL</licenseMerge>
+                        <licenseMerge>Eclipse Distribution License 1.0|Eclipse Distribution License (EDL), Version 1.0</licenseMerge>
+                    </licenseMerges>
+                    <excludedArtifacts>javax.ws.rs-api</excludedArtifacts>
+                    <roots>
+                    </roots>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>add-third-party</goal>
+                        </goals>
+                    </execution>
+                    </executions>
+                </plugin>
             <!-- used for coverage by cov.io -->
             <plugin>
                 <groupId>org.jacoco</groupId>
