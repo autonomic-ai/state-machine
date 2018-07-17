@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.github.davidmoten.bean.annotation.GenerateImmutable;
+import com.github.davidmoten.exceptions.InvalidStateNameException;
 import com.github.davidmoten.fsm.graph.Graph;
 import com.github.davidmoten.fsm.graph.GraphAnalyzer;
 import com.github.davidmoten.fsm.graph.GraphEdge;
@@ -211,6 +212,25 @@ public final class StateMachineDefinition<T> {
             this.graphAnalyzer = new GraphAnalyzer(getGraph());
         }
         return this.graphAnalyzer;
+    }
+
+    public boolean isReachable(String fromStateName, String toStateName) throws InvalidStateNameException {
+        try {
+            return this.getGraphAnalyzer().isReachable(fromStateName, toStateName);
+        } catch(Exception e) {
+            throw new InvalidStateNameException("Invalid state(s) passed: " + fromStateName +", " + toStateName);
+        }
+    }
+
+    public boolean isTerminal(String stateName) throws InvalidStateNameException {
+
+        State state = this.getState(stateName);
+
+        if(state == null) {
+            throw new InvalidStateNameException("Invalid state name: " + stateName);
+        }
+
+        return state.isTerminal();
     }
 
     private Graph buildGraph() {

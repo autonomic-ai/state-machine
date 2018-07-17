@@ -1,5 +1,6 @@
 package com.github.davidmoten.fsm.model;
 
+import com.github.davidmoten.exceptions.InvalidStateNameException;
 import com.github.davidmoten.resources.analyzer.StateMachineDefinitions;
 import com.github.davidmoten.resources.analyzer.execution.DownloadSucceeded;
 import com.github.davidmoten.resources.analyzer.execution.Execution;
@@ -12,7 +13,7 @@ import org.junit.Test;
 @SuppressWarnings("unchecked")
 public class StateMachineTest {
 
-    @Test
+    @Test(expected = InvalidStateNameException.class)
     public void stateMachineTerminalTest() {
 
         StateMachineDefinition<Execution> stateMachineDefinition = StateMachineDefinitions.createExecutionStateMachine();
@@ -31,6 +32,19 @@ public class StateMachineTest {
 
         assert(succeeded.isTerminal());
         assert(failed.isTerminal());
+
+        assert(stateMachineDefinition.isReachable("STARTED", "DOWNLOAD_SUCCEEDED"));
+        assert(stateMachineDefinition.isReachable("DOWNLOAD_STARTED", "DOWNLOAD_SUCCEEDED"));
+        assert(!stateMachineDefinition.isReachable("FAILED", "STARTED"));
+
+        assert(stateMachineDefinition.isTerminal("FAILED"));
+        assert(stateMachineDefinition.isTerminal("SUCCEEDED"));
+        assert(!stateMachineDefinition.isTerminal("DOWNLOAD_SUCCEEDED"));
+
+        // throws invalid state name exception
+        stateMachineDefinition.isReachable("meow", "cookiemonster");
+
+
     }
 
 }
