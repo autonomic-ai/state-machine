@@ -155,7 +155,7 @@
                               <!-- avoiding coverage checks for a temporary third-party repo -->
                               <counter>CLASS</counter>
                               <value>MISSEDRATIO</value>
-                              <maximum>0.01</maximum>
+                              <maximum>0.99</maximum>
                             </limit>
                           </limits>
                         </rule>
@@ -180,7 +180,6 @@
                                 <contextUrl>https://autonomic.jfrog.io/autonomic</contextUrl>
                                 <repoKey>libs-release-local</repoKey>
                                 <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-    +                               <password>${artifactory.password}</password>
                                 <username>${artifactory.username}</username>
                                 <password>${artifactory.password}</password>
                             </publisher>
