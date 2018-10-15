@@ -96,7 +96,6 @@ public final class StateMachineDefinition<T> {
     public <R extends Event<? super T>, S extends Event<? super T>> StateMachineDefinition<T> addTransition(
             State<T, R> state, State<T, S> other) {
         Transition<T, R, S> transition = new Transition<T, R, S>(state, other);
-        System.out.println("adding " + transition);
         for (Transition<T, ?, ?> t : transitions) {
             if (t.from() == state && t.to() == other) {
                 throw new IllegalArgumentException(
@@ -109,7 +108,6 @@ public final class StateMachineDefinition<T> {
 
     <S extends Event<? super T>> StateMachineDefinition<T> addInitialTransition(State<T, S> other) {
         Transition<T, EventVoid, S> transition = new Transition<T, EventVoid, S>(initialState, other);
-        System.out.println("adding " + transition);
         transitions.add(transition);
         states.add(initialState);
         states.add(other);
