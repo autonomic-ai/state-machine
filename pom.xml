@@ -178,7 +178,7 @@
                         <configuration>
                             <publisher>
                                 <contextUrl>https://autonomic.jfrog.io/autonomic</contextUrl>
-                                <repoKey>libs-release-local</repoKey>
+                                <repoKey>concourse-cv-platform-libs-release-local</repoKey>
                                 <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
                                 <username>${artifactory.username}</username>
                                 <password>${artifactory.password}</password>
