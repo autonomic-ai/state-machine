@@ -109,6 +109,8 @@
     <coverage.reports.dir>${project.build.directory}/target/coverage-reports</coverage.reports.dir>
     <jackson.version>2.8.9</jackson.version>
     <build.helper.version>3.0.0</build.helper.version>
+    <jacoco.maxClassesMissedRatio>0.90</jacoco.maxClassesMissedRatio>
+    <jacoco.minCoverage>0.10</jacoco.minCoverage>
   </properties>
 
   <dependencyManagement>
