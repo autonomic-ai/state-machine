@@ -1,269 +1,155 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+  The Apache Software License, Version 2.0
+  ——————————————————————————————————————————————————————————————————————————————
+  Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+  ——————————————————————————————————————————————————————————————————————————————
+  Proprietary and confidential.
+  
+  NOTICE:  All information contained herein is, and remains the property of
+  Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+  concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+  and may be covered by U.S. and Foreign Patents, patents in process, and are
+  protected by trade secret or copyright law. Dissemination of this information
+  or reproduction of this material is strictly forbidden unless prior written
+  permission is obtained from Autonomic, LLC.
+  
+  Unauthorized copy of this file, via any medium is strictly prohibited.
+  ______________________________________________________________________________
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
+  <parent>
+    <groupId>com.autonomic</groupId>
+    <artifactId>au-parent</artifactId>
+    <version>1.5.10</version>
+    <relativePath></relativePath>
+    <!-- lookup parent from repository -->
+  </parent>
+
+  <groupId>com.github.davidmoten</groupId>
+  <artifactId>state-machine-parent</artifactId>
+  <version>0.2.8.au1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>${project.artifactId}</name>
+
+  <url>http://github.com/davidmoten/state-machine</url>
+
+  <inceptionYear>2013</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>dave</id>
+      <name>Dave Moten</name>
+      <url>https://github.com/davidmoten/</url>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>+10</timezone>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>state-machine-runtime</module>
+    <module>state-machine-generator</module>
+    <module>state-machine-annotations</module>
+    <module>state-machine-maven-plugin</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:https://github.com/davidmoten/state-machine.git</connection>
+    <developerConnection>scm:git:https://github.com/davidmoten/state-machine.git</developerConnection>
+    <tag>0.1.1</tag>
+    <url>scm:git:https://github.com:davidmoten/state-machine.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/davidmoten/state-machine/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Travis</system>
+    <url>https://travis-ci.org/davidmoten/state-machine</url>
+  </ciManagement>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <deploy.plugin.version>2.8.2</deploy.plugin.version>
+    <compiler.plugin.version>3.7.0</compiler.plugin.version>
+    <rxjava.version>2.1.16</rxjava.version>
+
+    <cobertura.version>2.7</cobertura.version>
+    <checkstyle.version>2.16</checkstyle.version>
+    <findbugs.version>2.5.4</findbugs.version>
+    <javadoc.version>2.10.3</javadoc.version>
+    <pmd.version>3.5</pmd.version>
+    <jdepend.version>2.0</jdepend.version>
+    <javancss.version>2.1</javancss.version>
+    <project.info.version>2.4</project.info.version>
+    <jxr.version>2.5</jxr.version>
+    <taglist.version>2.4</taglist.version>
+    <m3.site.version>3.4</m3.site.version>
+    <changelog.version>2.2</changelog.version>
+    <coverage.reports.dir>${project.build.directory}/target/coverage-reports</coverage.reports.dir>
+    <jackson.version>2.8.9</jackson.version>
+    <build.helper.version>3.0.0</build.helper.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
         <groupId>com.autonomic</groupId>
-        <artifactId>au-parent</artifactId>
+        <artifactId>au-dependencies</artifactId>
         <version>0.0.2-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <build>
 
-    <groupId>com.github.davidmoten</groupId>
-    <artifactId>state-machine-parent</artifactId>
-    <version>0.2.8.au1-SNAPSHOT</version>
-    <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-
-    <url>http://github.com/davidmoten/state-machine</url>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.autonomic</groupId>
-                <artifactId>au-dependencies</artifactId>
-                <version>0.0.2-SNAPSHOT</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <deploy.plugin.version>2.8.2</deploy.plugin.version>
-        <compiler.plugin.version>3.7.0</compiler.plugin.version>
-        <rxjava.version>2.1.16</rxjava.version>
-
-        <cobertura.version>2.7</cobertura.version>
-        <checkstyle.version>2.16</checkstyle.version>
-        <findbugs.version>2.5.4</findbugs.version>
-        <javadoc.version>2.10.3</javadoc.version>
-        <pmd.version>3.5</pmd.version>
-        <jdepend.version>2.0</jdepend.version>
-        <javancss.version>2.1</javancss.version>
-        <project.info.version>2.4</project.info.version>
-        <jxr.version>2.5</jxr.version>
-        <taglist.version>2.4</taglist.version>
-        <m3.site.version>3.4</m3.site.version>
-        <changelog.version>2.2</changelog.version>
-        <coverage.reports.dir>${project.build.directory}/target/coverage-reports</coverage.reports.dir>
-        <jackson.version>2.8.9</jackson.version>
-        <build.helper.version>3.0.0</build.helper.version>
-    </properties>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
-
-    <ciManagement>
-        <system>Travis</system>
-        <url>https://travis-ci.org/davidmoten/state-machine</url>
-    </ciManagement>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/davidmoten/state-machine/issues</url>
-    </issueManagement>
-
-    <inceptionYear>2013</inceptionYear>
-    <developers>
-        <developer>
-            <id>dave</id>
-            <name>Dave Moten</name>
-            <url>https://github.com/davidmoten/</url>
-            <roles>
-                <role>architect</role>
-                <role>developer</role>
-            </roles>
-            <timezone>+10</timezone>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:https://github.com/davidmoten/state-machine.git</connection>
-        <developerConnection>scm:git:https://github.com/davidmoten/state-machine.git</developerConnection>
-        <url>scm:git:https://github.com:davidmoten/state-machine.git</url>
-        <tag>0.1.1</tag>
-    </scm>
-
-    <modules>
-        <module>state-machine-runtime</module>
-        <module>state-machine-generator</module>
-        <module>state-machine-annotations</module>
-        <module>state-machine-maven-plugin</module>
-    </modules>
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                  <groupId>org.apache.rat</groupId>
-                  <artifactId>apache-rat-plugin</artifactId>
-                  <configuration>
-                    <excludes combine.children="append">
-                        <exclude>src/docs/**</exclude>
-                        <!-- this entire repo is apache2 -->
-                        <exclude>**/**</exclude>
-                    </excludes>
-                  </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${compiler.plugin.version}</version>
-                    <configuration>
-                        <source>${compiler.source.version}</source>
-                        <target>${compiler.source.version}</target>
-                        <compilerArgs>
-                            <compilerArg>-parameters</compilerArg>
-                        </compilerArgs>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-              <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                  <execution>
-                    <id>default-check</id>
-                    <goals>
-                      <goal>check</goal>
-                    </goals>
-                    <configuration>
-                      <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
-                      <rules>
-                        <rule>
-                          <element>BUNDLE</element>
-                          <limits>
-                            <limit>
-                              <counter>INSTRUCTION</counter>
-                              <value>COVEREDRATIO</value>
-                              <!-- avoiding coverage checks for a temporary third-party repo -->
-                              <minimum>0.01</minimum>
-                            </limit>
-                            <limit>
-                              <!-- avoiding coverage checks for a temporary third-party repo -->
-                              <counter>CLASS</counter>
-                              <value>MISSEDRATIO</value>
-                              <maximum>0.99</maximum>
-                            </limit>
-                          </limits>
-                        </rule>
-                      </rules>
-                    </configuration>
-                  </execution>
-                </executions>
-              </plugin>
-            <plugin>
-                <groupId>org.jfrog.buildinfo</groupId>
-                <artifactId>artifactory-maven-plugin</artifactId>
-                <version>${artifactory-maven-plugin.version}</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>build-info</id>
-                        <goals>
-                            <goal>publish</goal>
-                        </goals>
-                        <configuration>
-                            <publisher>
-                                <contextUrl>https://autonomic.jfrog.io/autonomic</contextUrl>
-                                <repoKey>libs-release-local</repoKey>
-                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                                <username>${artifactory.username}</username>
-                                <password>${artifactory.password}</password>
-                            </publisher>
-                            <deployProperties>
-                                <groupId>${project.groupId}</groupId>
-                                <artifactId>${project.artifactId}</artifactId>
-                                <version>${project.version}</version>
-                            </deployProperties>
-                            <buildInfo>
-                                <buildNumber>${build-number}</buildNumber>
-                            </buildInfo>
-                            <licenses>
-                                <autoDiscover>true</autoDiscover>
-                            </licenses>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <!-- unfortunately there's no way to deploy au-common anymore, so I ensured there are no
-                     conflicting licenses with our legal department and added my own exclusions here. In
-                     the near term I hope to get any changes in this repo merged back to upstream and delete
-                     this repo entirely. -->
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <configuration>
-                    <licenseName>au_v1</licenseName>
-                    <licenseResolver>${license.basedir}/licenses</licenseResolver>
-                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-                    <outputDirectory>${project.basedir}</outputDirectory>
-                    <descriptionTemplate>${license.basedir}/licenses/description.ftl</descriptionTemplate>
-                    <fileTemplate>${license.basedir}/licenses/third-party-template.ftl</fileTemplate>
-                    <thirdPartyFilename>THIRD-PARTY.csv</thirdPartyFilename>
-                    <useMissingFile>true</useMissingFile>
-                    <missingFile>${license.basedir}/licenses/THIRD-PARTY.properties</missingFile>
-                    <failIfWarning>true</failIfWarning>
-                    <includedLicenses>Autonomic Proprietary 1.0|Ford Proprietary with Autonomic Usage Grant 1.0|Apache License, Version 2.0|MIT-License|BSD 3-Clause|CDDL 1.1|The JSON License|MPL 1.1|Eclipse Public License 1.0|Common Public License Version 1.0|Public Domain|Eclipse Distribution License 1.0|The PostgreSQL License|GNU Lesser General Public License</includedLicenses>
-                    <licenseMerges>
-                        <licenseMerge>Apache License, Version 2.0|Apache 2.0|Apache 2|The Apache Software License, Version 2.0|Apache License, version 2.0|Apache License 2.0|Apache Software Licenses|Apache 2.0 License|ASL, version 2|The Apache License, Version 2.0|Apache-2.0</licenseMerge>
-                        <licenseMerge>MIT-License|MIT License|MIT|The MIT License|MIT license|Bouncy Castle Licence|The MIT License (MIT)</licenseMerge>
-                        <licenseMerge>BSD 3-Clause|BSD 3-clause|New BSD License|New BSD license|BSD New license|The New BSD License|BSD|The BSD License|BSD License|BSD Licence 3</licenseMerge>
-                        <licenseMerge>Eclipse Public License 1.0|Eclipse Public License, Version 1.0|Eclipse Public License - v 1.0|Eclipse Public License (EPL), Version 1.0|EPL 1.0|Eclipse Public License - Version 1.0</licenseMerge>
-                        <licenseMerge>CDDL 1.1|COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0|CDDL+GPL License|CDDL + GPLv2 with classpath exception</licenseMerge>
-                        <licenseMerge>Public Domain|Public Domain, per Creative Commons CC0|CC0 1.0 Universal|CC0|WTFPL</licenseMerge>
-                        <licenseMerge>Eclipse Distribution License 1.0|Eclipse Distribution License (EDL), Version 1.0</licenseMerge>
-                    </licenseMerges>
-                    <excludedArtifacts>javax.ws.rs-api</excludedArtifacts>
-                    <roots>
-                    </roots>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>add-third-party</goal>
-                        </goals>
-                    </execution>
-                    </executions>
-                </plugin>
-            <!-- used for coverage by cov.io -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.9</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/FileBasedSPSCQueueMemoryMapped*</exclude>
-                            </excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <plugins>
+      <!-- used for coverage by cov.io -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.7.9</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <excludes>
+                <exclude>**/FileBasedSPSCQueueMemoryMapped*</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

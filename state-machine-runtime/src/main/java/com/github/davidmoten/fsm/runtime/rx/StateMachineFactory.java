@@ -1,11 +1,28 @@
+/*-
+ * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ * The Apache Software License, Version 2.0
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Proprietary and confidential.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of
+ * Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+ * concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are
+ * protected by trade secret or copyright law. Dissemination of this information
+ * or reproduction of this material is strictly forbidden unless prior written
+ * permission is obtained from Autonomic, LLC.
+ * 
+ * Unauthorized copy of this file, via any medium is strictly prohibited.
+ * ______________________________________________________________________________
+ */
 package com.github.davidmoten.fsm.runtime.rx;
 
+import com.github.davidmoten.fsm.runtime.EntityBehaviour;
+import io.reactivex.functions.Function;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.github.davidmoten.fsm.runtime.EntityBehaviour;
-
-import io.reactivex.functions.Function;
 
 public class StateMachineFactory<Id> implements Function<Class<?>, EntityBehaviour<?, Id>> {
 
@@ -38,7 +55,8 @@ public class StateMachineFactory<Id> implements Function<Class<?>, EntityBehavio
 
     public static final class Builder<Id> {
 
-        private final Map<Class<?>, Function<Class<?>, EntityBehaviour<?, Id>>> map = new HashMap<>();
+        private final Map<Class<?>, Function<Class<?>, EntityBehaviour<?, Id>>> map =
+                new HashMap<>();
 
         private Builder() {
             // prevent instantiation publicly
@@ -47,7 +65,8 @@ public class StateMachineFactory<Id> implements Function<Class<?>, EntityBehavio
         @SuppressWarnings("unchecked")
         private <T> Builder<Id> add(Class<T> cls,
                 Function<Class<?>, ? extends EntityBehaviour<T, Id>> factory) {
-            map.put(cls, (Function<Class<?>, EntityBehaviour<?, Id>>) (Function<? super Id, ?>) factory);
+            map.put(cls,
+                    (Function<Class<?>, EntityBehaviour<?, Id>>) (Function<? super Id, ?>) factory);
             return this;
         }
 
