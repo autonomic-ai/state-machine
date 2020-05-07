@@ -13,12 +13,18 @@ public final class State<T, R extends Event<? super T>> {
     private final Class<R> eventClass;
     private final StateMachineDefinition<T> m;
     private boolean isCreationDestination;
+    private boolean triggerQueueRemoval;
     private Optional<String> documentation = Optional.empty();
 
     public State(StateMachineDefinition<T> m, String name, Class<R> eventClass) {
+        this(m, name, eventClass, false);
+    }
+
+    public State(StateMachineDefinition<T> m, String name, Class<R> eventClass, boolean triggerQueueRemoval) {
         this.m = m;
         this.name = name;
         this.eventClass = eventClass;
+        this.triggerQueueRemoval = triggerQueueRemoval;
     }
 
     public Class<R> eventClass() {
@@ -64,6 +70,16 @@ public final class State<T, R extends Event<? super T>> {
 
     public boolean isInitial() {
         return name().equals("Initial");
+    }
+
+    /**
+     * Some states trigger the removal of commands from the queue even though the state is not
+     * the final state in the state machine. All states that are terminal will also trigger queue
+     * removal.
+     * @return
+     */
+    public boolean triggerQueueRemoval() {
+        return this.isTerminal() || this.triggerQueueRemoval;
     }
 
     public boolean isTerminal() {

@@ -35,7 +35,7 @@ public class StateMachineDefinitions implements Supplier<List<StateMachineDefini
             m.createState("DOWNLOADING", Downloading.class);
 
         State<Execution, DownloadSucceeded> downloadSucceeded =
-            m.createState("DOWNLOAD_SUCCEEDED", DownloadSucceeded.class);
+            m.createState("DOWNLOAD_SUCCEEDED", DownloadSucceeded.class, true);
 
         State<Execution, DownloadTimeout> downloadTimeout =
             m.createState("DOWNLOAD_TIMEOUT", DownloadTimeout.class);

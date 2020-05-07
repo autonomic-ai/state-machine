@@ -41,6 +41,10 @@ public class StateMachineTest {
         assert(stateMachineDefinition.isTerminal("SUCCEEDED"));
         assert(!stateMachineDefinition.isTerminal("DOWNLOAD_SUCCEEDED"));
 
+        assert(stateMachineDefinition.triggerQueueRemoval("DOWNLOAD_SUCCEEDED"));
+        assert(stateMachineDefinition.triggerQueueRemoval("SUCCEEDED"));
+        assert(!stateMachineDefinition.triggerQueueRemoval("STARTED"));
+
         // throws invalid state name exception
         stateMachineDefinition.isReachable("meow", "cookiemonster");
 

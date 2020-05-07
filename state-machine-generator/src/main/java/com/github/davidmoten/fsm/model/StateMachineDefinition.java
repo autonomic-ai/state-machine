@@ -51,16 +51,44 @@ public final class StateMachineDefinition<T> {
         return cls;
     }
 
-    public <R extends Event<? super T>> State<T, R> createState(String name, Class<R> eventClass) {
+    /**
+     * Method for building a State and adding it to this State Machine Definition.
+     * @param name - The name of the state
+     * @param eventClass - The class this event belongs to
+     * @param triggerQueueRemoval - Whether this state triggers removal of the command from queue,
+     *                            regardless of whether it is a terminal state.
+     * @return The created state
+     */
+    public <R extends Event<? super T>> State<T, R> createState(String name, Class<R> eventClass, boolean triggerQueueRemoval) {
         Preconditions.checkArgument(!eventClass.isAnnotationPresent(GenerateImmutable.class),
                 "cannot base a state on an event that is annotated with @GenerateImmutable, use the generated immutable class instead");
         Preconditions.checkNotNull(name);
         if (name.equals("Initial")) {
             name = name.concat("_1");
         }
-        State<T, R> state = new State<T, R>(this, name, eventClass);
+        State<T, R> state = new State<T, R>(this, name, eventClass, triggerQueueRemoval);
         states.add(state);
         return state;
+    }
+
+    /**
+     * Method for building a State and adding it to this State Machine Definition.
+     * @param name - The name of the state
+     * @param eventClass - The class this event belongs to
+     * @return The created state
+     */
+    public <R extends Event<? super T>> State<T, R> createState(String name, Class<R> eventClass) {
+        return this.createState(name, eventClass, false);
+    }
+
+    public boolean triggerQueueRemoval(String stateName) {
+        State state = this.getState(stateName);
+
+        if(state == null) {
+            throw new InvalidStateNameException("Invalid state name: " + stateName);
+        }
+
+        return state.triggerQueueRemoval();
     }
 
     public final State<T, ? extends Event<? super T>> getState(String name) {
