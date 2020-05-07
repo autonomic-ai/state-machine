@@ -1,3 +1,22 @@
+/*-
+ * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ * The Apache Software License, Version 2.0
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Proprietary and confidential.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of
+ * Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+ * concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are
+ * protected by trade secret or copyright law. Dissemination of this information
+ * or reproduction of this material is strictly forbidden unless prior written
+ * permission is obtained from Autonomic, LLC.
+ * 
+ * Unauthorized copy of this file, via any medium is strictly prohibited.
+ * ______________________________________________________________________________
+ */
 package com.github.davidmoten.bean.immutable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -8,7 +27,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /////////////////////////////////////////////////////
-// WARNING - Generated data class! 
+// WARNING - Generated data class!
 /////////////////////////////////////////////////////
 
 @SuppressWarnings("serial")
@@ -21,9 +40,9 @@ public class Example implements Serializable {
 
     @JsonCreator
     Example(
-      @JsonProperty("id") String id,
-      @JsonProperty("number") int number,
-      @JsonProperty("values") Date[] values) {
+            @JsonProperty("id") String id,
+            @JsonProperty("number") int number,
+            @JsonProperty("values") Date[] values) {
         this.id = id;
         this.number = number;
         this.values = values;
@@ -111,10 +130,9 @@ public class Example implements Serializable {
             return false;
         } else {
             Example other = (Example) o;
-            return
-                Objects.deepEquals(this.id, other.id)
-                && Objects.deepEquals(this.number, other.number)
-                && Objects.deepEquals(this.values, other.values);
+            return Objects.deepEquals(this.id, other.id)
+                    && Objects.deepEquals(this.number, other.number)
+                    && Objects.deepEquals(this.values, other.values);
         }
     }
 

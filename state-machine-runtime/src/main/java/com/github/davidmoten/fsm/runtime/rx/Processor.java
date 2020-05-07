@@ -1,16 +1,23 @@
+/*-
+ * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ * The Apache Software License, Version 2.0
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Proprietary and confidential.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of
+ * Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+ * concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are
+ * protected by trade secret or copyright law. Dissemination of this information
+ * or reproduction of this material is strictly forbidden unless prior written
+ * permission is obtained from Autonomic, LLC.
+ * 
+ * Unauthorized copy of this file, via any medium is strictly prohibited.
+ * ______________________________________________________________________________
+ */
 package com.github.davidmoten.fsm.runtime.rx;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-
-import org.reactivestreams.Subscriber;
 
 import com.github.davidmoten.fsm.runtime.Action3;
 import com.github.davidmoten.fsm.runtime.CancelTimedSignal;
@@ -23,7 +30,6 @@ import com.github.davidmoten.fsm.runtime.ObjectState;
 import com.github.davidmoten.fsm.runtime.Search;
 import com.github.davidmoten.fsm.runtime.Signal;
 import com.github.davidmoten.guavamini.Preconditions;
-
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Emitter;
 import io.reactivex.Flowable;
@@ -38,6 +44,16 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import org.reactivestreams.Subscriber;
 
 public final class Processor<Id> {
 
@@ -45,7 +61,8 @@ public final class Processor<Id> {
     private final PublishSubject<Signal<?, Id>> subject;
     private final Scheduler signalScheduler;
     private final Scheduler processingScheduler;
-    private final Map<ClassId<?, Id>, EntityStateMachine<?, Id>> stateMachines = new ConcurrentHashMap<>();
+    private final Map<ClassId<?, Id>, EntityStateMachine<?, Id>> stateMachines =
+            new ConcurrentHashMap<>();
     private final Map<ClassIdPair<Id>, Disposable> subscriptions = new ConcurrentHashMap<>();
     private final Flowable<Signal<?, Id>> signals;
     private final Function<GroupedFlowable<ClassId<?, Id>, EntityStateMachine<?, Id>>, Flowable<EntityStateMachine<?, Id>>> entityTransform;
@@ -114,18 +131,19 @@ public final class Processor<Id> {
         private Scheduler signalScheduler = Schedulers.computation();
         private Scheduler processingScheduler = Schedulers.trampoline();
         private Flowable<Signal<?, Id>> signals = Flowable.empty();
-        private Function<GroupedFlowable<ClassId<?, Id>, EntityStateMachine<?, Id>>, Flowable<EntityStateMachine<?, Id>>> entityTransform = g -> g;
+        private Function<GroupedFlowable<ClassId<?, Id>, EntityStateMachine<?, Id>>, Flowable<EntityStateMachine<?, Id>>> entityTransform =
+                g -> g;
         private FlowableTransformer<Signal<?, Id>, Signal<?, Id>> preGroupBy = x -> x;
         private Function<Consumer<Object>, Map<ClassId<?, Id>, Object>> mapFactory; // nullable
-        private Action3<? super EntityStateMachine<?, Id>, ? super Event<?>, ? super EntityState<?>> preTransitionAction = (
-                x, y, z) -> {
-        };
+        private Action3<? super EntityStateMachine<?, Id>, ? super Event<?>, ? super EntityState<?>> preTransitionAction =
+                (
+                        x, y, z) -> {
+                };
         private Consumer<? super EntityStateMachine<?, Id>> postTransitionAction = x -> {
         };
         private final Map<Class<?>, EntityBehaviour<?, Id>> behaviours = new HashMap<>();
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public <T> Builder<Id> behaviour(Class<T> cls, EntityBehaviour<T, Id> behaviour) {
             behaviours.put(cls, behaviour);
@@ -197,7 +215,7 @@ public final class Processor<Id> {
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Flowable<EntityStateMachine<?, Id>> flowable() {
         return Flowable.defer(() -> {
             Worker worker = signalScheduler.createWorker();
@@ -210,7 +228,7 @@ public final class Processor<Id> {
             Flowable<GroupedFlowable<ClassId<?, Id>, Signal<?, Id>>> o;
             if (mapFactory != null) {
                 o = o0.groupBy(signal -> new ClassId(signal.cls(),
-                 signal.id()), x -> x, true, 16, mapFactory);
+                        signal.id()), x -> x, true, 16, mapFactory);
             } else {
                 o = o0.groupBy(signal -> new ClassId(signal.cls(), signal.id()),
                         Functions.identity());
@@ -258,11 +276,10 @@ public final class Processor<Id> {
     }
 
     /**
-     * Combines the state creation and transition operations into the one class.
-     * Implements the transition rules of an Executable UML state machine in
-     * that for an entry procedure all signals to self are emitted before
-     * signals to others. Signals to self are actioned synchronously but signals
-     * to others may be actioned asynchronously.
+     * Combines the state creation and transition operations into the one class. Implements the
+     * transition rules of an Executable UML state machine in that for an entry procedure all
+     * signals to self are emitted before signals to others. Signals to self are actioned
+     * synchronously but signals to others may be actioned asynchronously.
      */
     private final class TransitionHandler implements Callable<Signals<Id>>,
             BiConsumer<Signals<Id>, Emitter<EntityStateMachine<?, Id>>> {
@@ -309,7 +326,7 @@ public final class Processor<Id> {
         @SuppressWarnings("unchecked")
         private <T> void applySignalToSelf(Signals<Id> signals,
                 Emitter<? super EntityStateMachine<?, Id>> observer, Event<T> event)
-                        throws Exception {
+                throws Exception {
             // run the entry procedure if a transition occurs
             // and record signals to self and to others
             machine = machine.signal((Event<Object>) event);
@@ -348,7 +365,7 @@ public final class Processor<Id> {
         private void cancel(Signal<?, Id> signal) {
             @SuppressWarnings("unchecked")
             CancelTimedSignal<Id> s = ((CancelTimedSignal<Id>) signal.event());
-            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @SuppressWarnings({"unchecked", "rawtypes"})
             Disposable sub = subscriptions
                     .remove(new ClassIdPair<Id>(new ClassId(s.fromClass(), s.fromId()),
                             new ClassId(signal.cls(), signal.id())));
@@ -361,17 +378,17 @@ public final class Processor<Id> {
                 Signal<?, Id> s, long delayMs) {
             // record pairwise signal so we can cancel it if
             // desired
-            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @SuppressWarnings({"unchecked", "rawtypes"})
             ClassIdPair<Id> idPair = new ClassIdPair<Id>(from,
                     new ClassId(signal.cls(), signal.id()));
             long t1 = signalScheduler.now(TimeUnit.MILLISECONDS);
             Disposable subscription = worker.schedule(() -> {
                 subject.onNext(s.now());
-            } , delayMs, TimeUnit.MILLISECONDS);
+            }, delayMs, TimeUnit.MILLISECONDS);
             long t2 = signalScheduler.now(TimeUnit.MILLISECONDS);
             worker.schedule(() -> {
                 subscriptions.remove(idPair);
-            } , delayMs - (t2 - t1), TimeUnit.MILLISECONDS);
+            }, delayMs - (t2 - t1), TimeUnit.MILLISECONDS);
             Disposable previous = subscriptions.put(idPair, subscription);
             if (previous != null) {
                 previous.dispose();
@@ -380,7 +397,7 @@ public final class Processor<Id> {
 
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     private <T> EntityStateMachine<T, Id> getStateMachine(Class<T> cls, Id id) {
         return (EntityStateMachine<T, Id>) stateMachines //
                 .computeIfAbsent(new ClassId<T, Id>(cls, id), clsId -> {
@@ -426,7 +443,7 @@ public final class Processor<Id> {
     }
 
     public void cancelSignal(Class<?> fromClass, Id fromId, Class<?> toClass, Id toId) {
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings({"unchecked", "rawtypes"})
         Disposable subscription = subscriptions.remove(
                 new ClassIdPair<Id>(new ClassId(fromClass, fromId), new ClassId(toClass, toId)));
         if (subscription != null) {

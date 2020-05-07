@@ -1,83 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+  The Apache Software License, Version 2.0
+  ——————————————————————————————————————————————————————————————————————————————
+  Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+  ——————————————————————————————————————————————————————————————————————————————
+  Proprietary and confidential.
+  
+  NOTICE:  All information contained herein is, and remains the property of
+  Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+  concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+  and may be covered by U.S. and Foreign Patents, patents in process, and are
+  protected by trade secret or copyright law. Dissemination of this information
+  or reproduction of this material is strictly forbidden unless prior written
+  permission is obtained from Autonomic, LLC.
+  
+  Unauthorized copy of this file, via any medium is strictly prohibited.
+  ______________________________________________________________________________
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.davidmoten</groupId>
-		<artifactId>state-machine-parent</artifactId>
-		<version>0.2.8.au1-SNAPSHOT</version>
-	</parent>
-	<artifactId>state-machine-generator</artifactId>
-	<name>${project.artifactId}</name>
-	<packaging>jar</packaging>
+  <parent>
+    <groupId>com.github.davidmoten</groupId>
+    <artifactId>state-machine-parent</artifactId>
+    <version>0.2.8.au1-SNAPSHOT</version>
+  </parent>
+  <artifactId>state-machine-generator</artifactId>
+  <packaging>jar</packaging>
+  <name>${project.artifactId}</name>
 
-	<dependencies>
+  <dependencies>
 
-		<dependency>
-			<groupId>com.github.davidmoten</groupId>
-			<artifactId>state-machine-runtime</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>com.github.davidmoten</groupId>
+      <artifactId>state-machine-runtime</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.github.davidmoten</groupId>
-			<artifactId>state-machine-annotations</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>com.github.davidmoten</groupId>
+      <artifactId>state-machine-annotations</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.github.davidmoten</groupId>
-			<artifactId>guava-mini</artifactId>
-			<version>0.1</version>
-		</dependency>
+    <dependency>
+      <groupId>com.github.davidmoten</groupId>
+      <artifactId>guava-mini</artifactId>
+      <version>0.1</version>
+    </dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
 
-		<dependency>
-			<groupId>com.github.javaparser</groupId>
-			<artifactId>javaparser-core</artifactId>
-			<version>3.2.10</version>
-		</dependency>
+    <dependency>
+      <groupId>com.github.javaparser</groupId>
+      <artifactId>javaparser-core</artifactId>
+      <version>3.2.10</version>
+    </dependency>
 
-		<!-- Test Dependencies -->
+    <!-- Test Dependencies -->
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
 
-		<dependency>
-			<groupId>com.github.davidmoten</groupId>
-			<artifactId>junit-extras</artifactId>
-			<version>0.3</version>
-			<scope>test</scope>
-		</dependency>
+    <dependency>
+      <groupId>com.github.davidmoten</groupId>
+      <artifactId>junit-extras</artifactId>
+      <version>0.3</version>
+      <scope>test</scope>
+    </dependency>
 
-	</dependencies>
+  </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>${maven.compiler.target}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${maven.compiler.target}</source>
+          <target>${maven.compiler.target}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

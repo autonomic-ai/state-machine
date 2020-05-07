@@ -1,5 +1,38 @@
+/*-
+ * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ * The Apache Software License, Version 2.0
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Proprietary and confidential.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of
+ * Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+ * concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are
+ * protected by trade secret or copyright law. Dissemination of this information
+ * or reproduction of this material is strictly forbidden unless prior written
+ * permission is obtained from Autonomic, LLC.
+ * 
+ * Unauthorized copy of this file, via any medium is strictly prohibited.
+ * ______________________________________________________________________________
+ */
 package com.github.davidmoten.bean;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.davidmoten.bean.annotation.GenerateImmutable;
+import com.github.davidmoten.guavamini.Preconditions;
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,21 +49,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.davidmoten.bean.annotation.GenerateImmutable;
-import com.github.davidmoten.guavamini.Preconditions;
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.ImportDeclaration;
-import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.FieldDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
-import com.github.javaparser.ast.type.ClassOrInterfaceType;
 
 public final class ImmutableBeanGenerator {
 
@@ -91,9 +109,11 @@ public final class ImmutableBeanGenerator {
             NodeList<ImportDeclaration> n = cu.getImports();
             if (n != null) {
                 imports = new HashMap<>(n.stream() //
-                        .filter(x -> !x.getName().toString().equals(GenerateImmutable.class.getName())) //
+                        .filter(x -> !x.getName().toString()
+                                .equals(GenerateImmutable.class.getName())) //
                         .collect(Collectors.<ImportDeclaration, String, String>toMap(
-                                x -> simpleName(x.getName().toString()), x -> x.getName().toString())));
+                                x -> simpleName(x.getName().toString()),
+                                x -> x.getName().toString())));
             } else {
                 imports = new HashMap<>();
             }
@@ -170,7 +190,8 @@ public final class ImmutableBeanGenerator {
         return fields;
     }
 
-    private static void writeStaticMethods(PrintStream s, String indent, ClassOrInterfaceDeclaration c) {
+    private static void writeStaticMethods(PrintStream s, String indent,
+            ClassOrInterfaceDeclaration c) {
         if (!c.getMethods().isEmpty()) {
             c //
                     .getMethods() //
@@ -218,18 +239,23 @@ public final class ImmutableBeanGenerator {
                 s.format("\n%s%s%sthis.b = b;", indent, indent, indent);
                 s.format("\n%s%s}", indent, indent);
                 if (i < vars.size()) {
-                    s.format("\n\n%s%spublic Builder%s %s(%s %s) {", indent, indent, i + 1, v.getName(), v.getType(),
+                    s.format("\n\n%s%spublic Builder%s %s(%s %s) {", indent, indent, i + 1,
+                            v.getName(), v.getType(),
                             v.getName());
-                    s.format("\n%s%s%sb.%s = %s;", indent, indent, indent, v.getName(), v.getName());
+                    s.format("\n%s%s%sb.%s = %s;", indent, indent, indent, v.getName(),
+                            v.getName());
                     s.format("\n%s%s%sreturn new Builder%s(b);", indent, indent, indent, i + 1);
                     s.format("\n%s%s}", indent, indent);
                     s.format("\n%s}", indent);
                 } else {
-                    s.format("\n\n%s%spublic %s %s(%s %s) {", indent, indent, c.getName(), v.getName(), v.getType(),
+                    s.format("\n\n%s%spublic %s %s(%s %s) {", indent, indent, c.getName(),
+                            v.getName(), v.getType(),
                             v.getName());
-                    s.format("\n%s%s%sb.%s = %s;", indent, indent, indent, v.getName(), v.getName());
+                    s.format("\n%s%s%sb.%s = %s;", indent, indent, indent, v.getName(),
+                            v.getName());
                     s.format("\n%s%s%sreturn new %s(%s);", indent, indent, indent, c.getName(), //
-                            vars.stream().map(x -> "b." + x.getName().toString()).collect(Collectors.joining(", ")));
+                            vars.stream().map(x -> "b." + x.getName().toString())
+                                    .collect(Collectors.joining(", ")));
                     s.format("\n%s%s}", indent, indent);
                     s.format("\n%s}", indent);
                 }
@@ -238,7 +264,8 @@ public final class ImmutableBeanGenerator {
         }
     }
 
-    private static void writeCreateMethod(PrintStream s, String indent, ClassOrInterfaceDeclaration c,
+    private static void writeCreateMethod(PrintStream s, String indent,
+            ClassOrInterfaceDeclaration c,
             List<VariableDeclarator> vars) {
         if (!GENERATE_CREATE_METHOD)
             return;
@@ -284,8 +311,10 @@ public final class ImmutableBeanGenerator {
                 resolve(imports, StringBuilder.class));
         s.format("\n%s%sb.append(\"%s[\");", indent, indent, c.getName());
         String ex = vars.stream() //
-                .map(x -> String.format("\n%s%sb.append(\"%s=\" + this.%s);", indent, indent, x.getName(), x.getName())) //
-                .collect(Collectors.joining(String.format("\n%s%sb.append(\",\");", indent, indent)));
+                .map(x -> String.format("\n%s%sb.append(\"%s=\" + this.%s);", indent, indent,
+                        x.getName(), x.getName())) //
+                .collect(Collectors
+                        .joining(String.format("\n%s%sb.append(\",\");", indent, indent)));
         s.format("%s", ex);
         s.format("\n%s%sb.append(\"]\");", indent, indent);
         s.format("\n%s%sreturn b.toString();", indent, indent);
@@ -304,12 +333,14 @@ public final class ImmutableBeanGenerator {
         if (vars.isEmpty()) {
             s.format("\n%s%s%sreturn true;", indent, indent, indent);
         } else {
-            s.format("\n%s%s%s%s other = (%s) o;", indent, indent, indent, c.getName(), c.getName());
+            s.format("\n%s%s%s%s other = (%s) o;", indent, indent, indent, c.getName(),
+                    c.getName());
             s.format("\n%s%s%sreturn", indent, indent, indent);
             String expression = vars.stream() ///
                     .map(x -> String.format("%s.deepEquals(this.%s, other.%s)", //
                             resolve(imports, Objects.class), x.getName(), x.getName())) //
-                    .collect(Collectors.joining(String.format("\n%s%s%s%s&& ", indent, indent, indent, indent)));
+                    .collect(Collectors.joining(
+                            String.format("\n%s%s%s%s&& ", indent, indent, indent, indent)));
             s.format("\n%s%s%s%s%s;", indent, indent, indent, indent, expression);
         }
         s.format("\n%s%s}", indent, indent);
@@ -331,7 +362,8 @@ public final class ImmutableBeanGenerator {
             List<VariableDeclarator> vars) {
         vars.stream() //
                 .forEach(x -> {
-                    s.format("\n\n%spublic %s with%s(%s %s) {", indent, c.getName(), capFirst(x.getName().toString()),
+                    s.format("\n\n%spublic %s with%s(%s %s) {", indent, c.getName(),
+                            capFirst(x.getName().toString()),
                             x.getType(), x.getName());
                     s.format("\n%s%sreturn new %s(%s);", indent, indent, c.getName(), //
                             vars.stream() //
@@ -341,15 +373,18 @@ public final class ImmutableBeanGenerator {
                 });
     }
 
-    private static void writeConstructor(PrintStream s, String indent, ClassOrInterfaceDeclaration c,
-            List<FieldDeclaration> fields, List<VariableDeclarator> vars, Map<String, String> imports) {
+    private static void writeConstructor(PrintStream s, String indent,
+            ClassOrInterfaceDeclaration c,
+            List<FieldDeclaration> fields, List<VariableDeclarator> vars,
+            Map<String, String> imports) {
         String typedParams = fields.stream() //
                 .map(x -> declaration(x, imports)) //
                 .collect(Collectors.joining(String.format(",\n%s  ", indent)));
         s.format("\n\n%s@%s", indent, resolve(imports, JsonCreator.class));
         s.format("\n%s%s(\n%s%s%s) {", indent, c.getName(), indent, "  ", typedParams);
         vars.stream() //
-                .forEach(x -> s.format("\n%s%sthis.%s = %s;", indent, indent, x.getName(), x.getName()));
+                .forEach(x -> s.format("\n%s%sthis.%s = %s;", indent, indent, x.getName(),
+                        x.getName()));
         s.format("\n%s}", indent);
     }
 
@@ -373,7 +408,8 @@ public final class ImmutableBeanGenerator {
         return s.toString();
     }
 
-    private static void writeBuilderFields(PrintStream s, String indent, List<VariableDeclarator> vars) {
+    private static void writeBuilderFields(PrintStream s, String indent,
+            List<VariableDeclarator> vars) {
         String flds = vars.stream() //
                 .map(x -> NL + indent + indent + x.getType() + " " + x.getName() + ";") //
                 .collect(Collectors.joining());
@@ -429,7 +465,8 @@ public final class ImmutableBeanGenerator {
 
     private static String declaration(FieldDeclaration f, Map<String, String> imports) {
         VariableDeclarator v = variableDeclarator(f);
-        return String.format("@%s(\"%s\") %s %s", resolve(imports, JsonProperty.class), v.getName(), v.getType(),
+        return String.format("@%s(\"%s\") %s %s", resolve(imports, JsonProperty.class), v.getName(),
+                v.getType(),
                 v.getName());
     }
 
@@ -447,7 +484,8 @@ public final class ImmutableBeanGenerator {
                 scanAndGenerate(file, generatedSourceDirectory);
             } else if (file.getName().endsWith(".java")) {
                 try {
-                    String code = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+                    String code =
+                            new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
                     if (code.contains(GenerateImmutable.class.getName())) {
                         generate(code, generatedSourceDirectory);
                     }

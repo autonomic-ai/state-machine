@@ -1,7 +1,37 @@
+/*-
+ * ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+ * The Apache Software License, Version 2.0
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Copyright (C) 2013 - 2020 Autonomic, LLC - All rights reserved
+ * ——————————————————————————————————————————————————————————————————————————————
+ * Proprietary and confidential.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of
+ * Autonomic, LLC and its suppliers, if any.  The intellectual and technical
+ * concepts contained herein are proprietary to Autonomic, LLC and its suppliers
+ * and may be covered by U.S. and Foreign Patents, patents in process, and are
+ * protected by trade secret or copyright law. Dissemination of this information
+ * or reproduction of this material is strictly forbidden unless prior written
+ * permission is obtained from Autonomic, LLC.
+ * 
+ * Unauthorized copy of this file, via any medium is strictly prohibited.
+ * ______________________________________________________________________________
+ */
 package com.github.davidmoten.fsm.model;
 
 import static com.github.davidmoten.fsm.Util.camelCaseToSpaced;
 
+import com.github.davidmoten.bean.annotation.GenerateImmutable;
+import com.github.davidmoten.exceptions.InvalidStateNameException;
+import com.github.davidmoten.fsm.graph.Graph;
+import com.github.davidmoten.fsm.graph.GraphAnalyzer;
+import com.github.davidmoten.fsm.graph.GraphEdge;
+import com.github.davidmoten.fsm.graph.GraphNode;
+import com.github.davidmoten.fsm.graph.GraphmlWriter;
+import com.github.davidmoten.fsm.graph.NodeOptions;
+import com.github.davidmoten.fsm.runtime.Event;
+import com.github.davidmoten.fsm.runtime.EventVoid;
+import com.github.davidmoten.guavamini.Preconditions;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
@@ -15,22 +45,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.github.davidmoten.bean.annotation.GenerateImmutable;
-import com.github.davidmoten.exceptions.InvalidStateNameException;
-import com.github.davidmoten.fsm.graph.Graph;
-import com.github.davidmoten.fsm.graph.GraphAnalyzer;
-import com.github.davidmoten.fsm.graph.GraphEdge;
-import com.github.davidmoten.fsm.graph.GraphNode;
-import com.github.davidmoten.fsm.graph.GraphmlWriter;
-import com.github.davidmoten.fsm.graph.NodeOptions;
-import com.github.davidmoten.fsm.runtime.Event;
-import com.github.davidmoten.fsm.runtime.EventVoid;
-import com.github.davidmoten.guavamini.Preconditions;
-
 public final class StateMachineDefinition<T> {
 
     private final Class<T> cls;
-    private final List<Transition<T, ? extends Event<? super T>, ? extends Event<? super T>>> transitions = new ArrayList<>();
+    private final List<Transition<T, ? extends Event<? super T>, ? extends Event<? super T>>> transitions =
+            new ArrayList<>();
     private final Set<State<T, ? extends Event<? super T>>> states = new HashSet<>();
     private final State<T, EventVoid> initialState;
     private Graph graph;
@@ -53,13 +72,15 @@ public final class StateMachineDefinition<T> {
 
     /**
      * Method for building a State and adding it to this State Machine Definition.
+     * 
      * @param name - The name of the state
      * @param eventClass - The class this event belongs to
      * @param triggerQueueRemoval - Whether this state triggers removal of the command from queue,
-     *                            regardless of whether it is a terminal state.
+     *        regardless of whether it is a terminal state.
      * @return The created state
      */
-    public <R extends Event<? super T>> State<T, R> createState(String name, Class<R> eventClass, boolean triggerQueueRemoval) {
+    public <R extends Event<? super T>> State<T, R> createState(String name, Class<R> eventClass,
+            boolean triggerQueueRemoval) {
         Preconditions.checkArgument(!eventClass.isAnnotationPresent(GenerateImmutable.class),
                 "cannot base a state on an event that is annotated with @GenerateImmutable, use the generated immutable class instead");
         Preconditions.checkNotNull(name);
@@ -73,6 +94,7 @@ public final class StateMachineDefinition<T> {
 
     /**
      * Method for building a State and adding it to this State Machine Definition.
+     * 
      * @param name - The name of the state
      * @param eventClass - The class this event belongs to
      * @return The created state
@@ -84,7 +106,7 @@ public final class StateMachineDefinition<T> {
     public boolean triggerQueueRemoval(String stateName) {
         State state = this.getState(stateName);
 
-        if(state == null) {
+        if (state == null) {
             throw new InvalidStateNameException("Invalid state name: " + stateName);
         }
 
@@ -93,23 +115,23 @@ public final class StateMachineDefinition<T> {
 
     public final State<T, ? extends Event<? super T>> getState(String name) {
         return states.stream()
-            .filter(s -> s.name().equals(name))
-            .findFirst()
-            .orElse(null);
+                .filter(s -> s.name().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     public StateBuilder createState(String name) {
-         return new StateBuilder(name);
+        return new StateBuilder(name);
     }
-    
+
     public final class StateBuilder {
-        
+
         final String name;
 
         StateBuilder(String name) {
             this.name = name;
         }
-        
+
         /**
          * Sets the event type used to transition <i>to</i> this state.
          * 
@@ -135,7 +157,8 @@ public final class StateMachineDefinition<T> {
     }
 
     <S extends Event<? super T>> StateMachineDefinition<T> addInitialTransition(State<T, S> other) {
-        Transition<T, EventVoid, S> transition = new Transition<T, EventVoid, S>(initialState, other);
+        Transition<T, EventVoid, S> transition =
+                new Transition<T, EventVoid, S>(initialState, other);
         transitions.add(transition);
         states.add(initialState);
         states.add(other);
@@ -156,7 +179,8 @@ public final class StateMachineDefinition<T> {
         out.println("<html/>");
         out.println("<head>");
         out.println("<style>");
-        out.println("table {border-collapse: collapse;}\n" + "table, th, td {border: 1px solid black;}");
+        out.println("table {border-collapse: collapse;}\n"
+                + "table, th, td {border: 1px solid black;}");
         out.println(".transition {background-color: #ADE2A7}");
         out.println("</style>");
         out.println("</head>");
@@ -164,14 +188,18 @@ public final class StateMachineDefinition<T> {
         // states
         out.println("<h2>States</h2>");
         Comparator<State<T, ?>> comparator = (a, b) -> a.name().compareTo(b.name());
-        states.stream().sorted(comparator).forEach(state -> out.println("<p class=\"state\"><b>" + state.name()
-                + "</b> [" + state.eventClass().getSimpleName() + "]</p>" + state.documentation().orElse("")));
+        states.stream().sorted(comparator)
+                .forEach(state -> out.println("<p class=\"state\"><b>" + state.name()
+                        + "</b> [" + state.eventClass().getSimpleName() + "]</p>"
+                        + state.documentation().orElse("")));
 
         // events
         out.println("<h2>Events</h2>");
-        states.stream().filter(state -> !state.isInitial()).map(state -> state.eventClass().getSimpleName()).distinct()
+        states.stream().filter(state -> !state.isInitial())
+                .map(state -> state.eventClass().getSimpleName()).distinct()
                 .sorted()
-                .forEach(event -> out.println("<p class=\"event\"><i>" + camelCaseToSpaced(event) + "</i></p>"));
+                .forEach(event -> out
+                        .println("<p class=\"event\"><i>" + camelCaseToSpaced(event) + "</i></p>"));
 
         // transition table
         // state onEntry template
@@ -187,10 +215,12 @@ public final class StateMachineDefinition<T> {
             out.print("<tr><th>" + state.name() + "</th>");
             states.stream().sorted(comparator).forEach(st -> {
                 boolean hasTransition = transitions.stream()
-                        .anyMatch(t -> t.from().name().equals(state.name()) && t.to().name().equals(st.name()));
+                        .anyMatch(t -> t.from().name().equals(state.name())
+                                && t.to().name().equals(st.name()));
                 if (hasTransition) {
                     out.print(
-                            "<td class=\"transition\">" + camelCaseToSpaced(st.eventClass().getSimpleName()) + "</td>");
+                            "<td class=\"transition\">"
+                                    + camelCaseToSpaced(st.eventClass().getSimpleName()) + "</td>");
                 } else {
                     out.print("<td></td>");
                 }
@@ -214,15 +244,17 @@ public final class StateMachineDefinition<T> {
     }
 
     public boolean hasCreationTransition() {
-        return transitions().stream().filter(t -> t.from().isCreationDestination()).findAny().isPresent();
+        return transitions().stream().filter(t -> t.from().isCreationDestination()).findAny()
+                .isPresent();
     }
 
     /**
      * Get the Graph representation of this state machine definition
+     * 
      * @return A Graph generated from this StateMachineDefinition
      */
     public synchronized final Graph getGraph() {
-        if(this.graph == null) {
+        if (this.graph == null) {
             this.graph = this.buildGraph();
         }
 
@@ -231,20 +263,23 @@ public final class StateMachineDefinition<T> {
 
     /**
      * Get a GraphAnalyzer for this state machine definition
+     * 
      * @return
      */
     public synchronized final GraphAnalyzer getGraphAnalyzer() {
-        if(this.graphAnalyzer == null) {
+        if (this.graphAnalyzer == null) {
             this.graphAnalyzer = new GraphAnalyzer(getGraph());
         }
         return this.graphAnalyzer;
     }
 
-    public boolean isReachable(String fromStateName, String toStateName) throws InvalidStateNameException {
+    public boolean isReachable(String fromStateName, String toStateName)
+            throws InvalidStateNameException {
         try {
             return this.getGraphAnalyzer().isReachable(fromStateName, toStateName);
-        } catch(Exception e) {
-            throw new InvalidStateNameException("Invalid state(s) passed: " + fromStateName +", " + toStateName);
+        } catch (Exception e) {
+            throw new InvalidStateNameException(
+                    "Invalid state(s) passed: " + fromStateName + ", " + toStateName);
         }
     }
 
@@ -252,7 +287,7 @@ public final class StateMachineDefinition<T> {
 
         State state = this.getState(stateName);
 
-        if(state == null) {
+        if (state == null) {
             throw new InvalidStateNameException("Invalid state name: " + stateName);
         }
 
@@ -262,7 +297,7 @@ public final class StateMachineDefinition<T> {
     private Graph buildGraph() {
         List<GraphNode> nodes = states.stream().map(GraphNode::new).collect(Collectors.toList());
         Map<String, GraphNode> map = nodes.stream()
-            .collect(Collectors.toMap(node -> node.state().name(), node -> node));
+                .collect(Collectors.toMap(node -> node.state().name(), node -> node));
         List<GraphEdge> edges = transitions.stream().map(t -> {
             GraphNode from = map.get(t.from().name());
             GraphNode to = map.get(t.to().name());
